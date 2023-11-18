@@ -4,28 +4,30 @@
     <title>Stock Predictor</title>
     <script>
         async function predict() {
-            let symbol = document.getElementById("symbol").value;
-            let period = document.getElementById("period").value;
+    let symbol = document.getElementById("symbol").value;
+    let period = document.getElementById("period").value;
 
-            try {
-                let response = await fetch('http://localhost:5000/predict', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({symbol: symbol, period: period})
-                });
+    try {
+        let response = await fetch('http://localhost:5000/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({symbol: symbol, period: period})
+        });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                let data = await response.json();
-                document.getElementById("result").innerText = JSON.stringify(data);
-            } catch (error) {
-                document.getElementById("result").innerText = 'Error: ' + error.message;
-            }
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
+
+        let data = await response.json();
+        document.getElementById("result").innerText = JSON.stringify(data);
+    } catch (error) {
+        console.error("Error caught:", error);  // Debugging
+        document.getElementById("result").innerText = 'Error: ' + error.message;
+    }
+}
+
     </script>
 </head>
 <body>
