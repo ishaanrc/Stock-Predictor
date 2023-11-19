@@ -5,6 +5,7 @@ app = Flask(__name__)
 
 @app.route('/fetch', methods=['POST'])
 def fetch_stock_data():
+    print("IN FETCH")
     data = request.json
     symbol = data.get('symbol')
     period = data.get('period', '1y')
@@ -12,9 +13,15 @@ def fetch_stock_data():
     try:
         stock = yf.Ticker(symbol)
         history = stock.history(period=period)
+        
+        # Convert Timestamps to strings
+        history.index = history.index.strftime('%Y-%m-%d')
+
         return jsonify(history.to_dict())
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(port=5001)
+    app.run(port=5001, debug=True)

@@ -5,8 +5,10 @@ from sklearn.model_selection import train_test_split
 import requests
 import numpy as np
 import pandas as pd
+from flask_cors import CORS 
 
 app = Flask(__name__)
+CORS(app, resources={r"/predict": {"origins": "http://127.0.0.1"}})
 
 # Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://myuser:mypassword@localhost/mydatabase'
@@ -20,20 +22,23 @@ class Prediction(db.Model):
     predicted_price = db.Column(db.Float, nullable=False)
 
 # URL of the Stock Data Service
-STOCK_DATA_SERVICE_URL = "http://localhost:5001"
+STOCK_DATA_SERVICE_URL = "http://127.0.0.1:5001"
 
 @app.route('/predict', methods=['POST'])
 def predict_stock_price():
+    print("HEEEEEEE")
     data = request.json
     symbol = data.get('symbol')
     period = data.get('period', '1y')
     print("DATA", data)
-
+    print("RESPONSE:")
     # Call the Stock Data Service
     response = requests.post(f"{STOCK_DATA_SERVICE_URL}/fetch", json={'symbol': symbol, 'period': period})
+    print("Response:",response)
+
     if response.status_code != 200:
         return jsonify({"error": "Failed to fetch stock data"}), response.status_code
-
+    print("PAST RESPONSE")
     # Convert response to DataFrame
     stock_data = pd.DataFrame(response.json())
     
@@ -63,4 +68,4 @@ def index():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # This will now execute within the app's context
-    app.run(port=5000)
+    app.run(port=5000, debug=True)
