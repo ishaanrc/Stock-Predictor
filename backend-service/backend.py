@@ -7,10 +7,10 @@ import pandas as pd
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/predict": {"origins": "http://127.0.0.1"}})
+#CORS(app, resources={r"/predict": {"origins": "http://127.0.0.1"}})
 
 # URL of the Stock Data Service
-STOCK_DATA_SERVICE_URL = "http://127.0.0.1:5001"
+STOCK_DATA_SERVICE_URL = "http://3.14.6.52:5001"
 
 @app.route('/predict', methods=['POST'])
 def predict_stock_price():
@@ -20,6 +20,7 @@ def predict_stock_price():
 
     # Call the Stock Data Service
     response = requests.post(f"{STOCK_DATA_SERVICE_URL}/fetch", json={'symbol': symbol, 'period': period})
+    print(response)
 
     if response.status_code != 200:
         return jsonify({"error": "Failed to fetch stock data"}), response.status_code
@@ -54,7 +55,7 @@ def index():
                 let period = document.getElementById("period").value;
 
                 try {
-                    let response = await fetch('http://127.0.0.1:5000/predict', {
+                    let response = await fetch('/predict', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -95,4 +96,4 @@ def index():
     '''
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5002, debug=True)
