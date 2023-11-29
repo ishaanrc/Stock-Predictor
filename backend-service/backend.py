@@ -10,13 +10,13 @@ app = Flask(__name__)
 #CORS(app, resources={r"/predict": {"origins": "http://127.0.0.1"}})
 
 # URL of the Stock Data Service
-STOCK_DATA_SERVICE_URL = "http://3.14.6.52:5001"
+STOCK_DATA_SERVICE_URL = "http://54.183.201.14:5001"
 
 @app.route('/predict', methods=['POST'])
 def predict_stock_price():
     data = request.json
     symbol = data.get('symbol')
-    period = data.get('period', '1y')
+    period = data.get('period', '10y')
 
     # Call the Stock Data Service
     response = requests.post(f"{STOCK_DATA_SERVICE_URL}/fetch", json={'symbol': symbol, 'period': period})
@@ -27,6 +27,7 @@ def predict_stock_price():
 
     # Convert response to DataFrame
     stock_data = pd.DataFrame(response.json())
+    print(len(stock_data))
     
     # Perform prediction
     predicted_price = perform_prediction(stock_data)
@@ -86,6 +87,7 @@ def index():
             <option value="3mo">3mo</option>
             <option value="6mo">6mo</option>
             <option value="1y" selected>1y</option>
+            <option value="10y" selected>10y</option>
         </select>
         <button onclick="predict()">Predict</button>
 

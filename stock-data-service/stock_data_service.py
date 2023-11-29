@@ -8,11 +8,12 @@ def fetch_stock_data():
     print("IN FETCH")
     data = request.json
     symbol = data.get('symbol')
-    period = data.get('period', '1y')
+    period = data.get('period', '10y')
 
     try:
         stock = yf.Ticker(symbol)
         history = stock.history(period=period)
+        print(len(history))
         
         # Convert Timestamps to strings
         history.index = history.index.strftime('%Y-%m-%d')
